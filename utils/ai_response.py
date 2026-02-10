@@ -14,7 +14,7 @@ client = ChatCompletionsClient(
     credential=AzureKeyCredential(token),
 )
 
-def get_completion(user_message, system_message="You are a helpful assistant."):
+def get_completion(user_message, system_message="You're a very  helpful assistant."):
     """
     Get a completion from the AI model.
     
