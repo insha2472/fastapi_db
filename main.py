@@ -3,10 +3,15 @@ from routes.user_routes import router as user_routes
 from db import get_db,DATABASE_URL
 from sqlalchemy import create_engine
 from models import Base
+from routes.email_routes import router as email_routes
+from routes.ai_response_routes import router as ai_response_routes
 import os
 
 app = FastAPI()
 app.include_router(user_routes)
+app.include_router(email_routes)
+app.include_router(ai_response_routes)
+
 
 
 engine = create_engine(DATABASE_URL)
