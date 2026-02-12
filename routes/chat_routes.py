@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Header
 from sqlalchemy.orm import Session
 from typing import List
 from db import get_db
@@ -19,19 +19,19 @@ def get_user_id_from_header(authorization: str = None):
     return int(payload.get("sub"))
 
 @router.get("/history", response_model=List[ChatHistoryList])
-def get_history(authorization: str = None, db: Session = Depends(get_db)):
+def get_history(authorization: str = Header(None), db: Session = Depends(get_db)):
     user_id = get_user_id_from_header(authorization)
     repo = ChatRepo(db)
     return repo.get_history_by_user(user_id)
 
 @router.post("/history", response_model=ChatHistory)
-def create_history(history: ChatHistoryCreate, authorization: str = None, db: Session = Depends(get_db)):
+def create_history(history: ChatHistoryCreate, authorization: str = Header(None), db: Session = Depends(get_db)):
     user_id = get_user_id_from_header(authorization)
     repo = ChatRepo(db)
     return repo.create_history(user_id, history)
 
 @router.get("/history/{history_id}/messages", response_model=List[ChatMessage])
-def get_messages(history_id: int, authorization: str = None, db: Session = Depends(get_db)):
+def get_messages(history_id: int, authorization: str = Header(None), db: Session = Depends(get_db)):
     # Verify history belongs to user
     user_id = get_user_id_from_header(authorization)
     repo = ChatRepo(db)
@@ -41,7 +41,7 @@ def get_messages(history_id: int, authorization: str = None, db: Session = Depen
     return repo.get_messages_by_history(history_id)
 
 @router.post("/history/{history_id}/messages", response_model=ChatMessage)
-def add_message(history_id: int, message: ChatMessageCreate, authorization: str = None, db: Session = Depends(get_db)):
+def add_message(history_id: int, message: ChatMessageCreate, authorization: str = Header(None), db: Session = Depends(get_db)):
     user_id = get_user_id_from_header(authorization)
     repo = ChatRepo(db)
     history = repo.get_history(history_id)
@@ -50,7 +50,7 @@ def add_message(history_id: int, message: ChatMessageCreate, authorization: str 
     return repo.add_message(history_id, message)
 
 @router.delete("/history/{history_id}")
-def delete_history(history_id: int, authorization: str = None, db: Session = Depends(get_db)):
+def delete_history(history_id: int, authorization: str = Header(None), db: Session = Depends(get_db)):
     user_id = get_user_id_from_header(authorization)
     repo = ChatRepo(db)
     history = repo.get_history(history_id)
@@ -60,7 +60,7 @@ def delete_history(history_id: int, authorization: str = None, db: Session = Dep
     return {"message": "Chat history deleted successfully"}
 
 @router.patch("/history/{history_id}", response_model=ChatHistory)
-def rename_history(history_id: int, history_update: ChatHistoryCreate, authorization: str = None, db: Session = Depends(get_db)):
+def rename_history(history_id: int, history_update: ChatHistoryCreate, authorization: str = Header(None), db: Session = Depends(get_db)):
     user_id = get_user_id_from_header(authorization)
     repo = ChatRepo(db)
     history = repo.get_history(history_id)
@@ -69,7 +69,7 @@ def rename_history(history_id: int, history_update: ChatHistoryCreate, authoriza
     return repo.update_history_title(history_id, history_update.title)
 
 @router.delete("/history")
-def delete_all_history(authorization: str = None, db: Session = Depends(get_db)):
+def delete_all_history(authorization: str = Header(None), db: Session = Depends(get_db)):
     user_id = get_user_id_from_header(authorization)
     repo = ChatRepo(db)
     repo.delete_all_history(user_id)
