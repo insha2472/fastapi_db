@@ -25,6 +25,7 @@ app.include_router(chat_routes)
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
+print(f"✅ Successfully connected to Postgres Database: {engine.url.host}")
 
 @app.get("/")
 def read_root():
