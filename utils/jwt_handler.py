@@ -37,11 +37,12 @@ def verify_token(token: str, token_type: str = "access") -> Optional[dict]:
         return None
 
 
-def create_tokens(user_id: int, email: str) -> dict:
+def create_tokens(user_id: int, email: str, user_name: str) -> dict:
     """Create both access and refresh tokens for a user."""
     token_data = {"sub": str(user_id), "email": email}
     return {
         "access_token": create_access_token(token_data),
         "refresh_token": create_refresh_token(token_data),
-        "token_type": "bearer"
+        "token_type": "bearer",
+        "user_name": user_name
     }
