@@ -23,8 +23,7 @@ app.include_router(ai_response_routes)
 
 
 
-engine = create_engine(DATABASE_URL)
-Base.metadata.create_all(engine)
+# Database initialization is handled in db.py
 
 @app.get("/")
 def read_root():
@@ -33,4 +32,4 @@ def read_root():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host=["0.0.0.0"], port=8000,reload=True)
+    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)

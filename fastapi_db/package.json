@@ -1,0 +1,9 @@
+{
+  "name": "fastapi_db",
+  "version": "1.0.0",
+  "description": "FastAPI project with database integration",
+  "scripts": {
+    "dev": ".\\venv\\Scripts\\python.exe -m uvicorn main:app --reload"
+  },
+  "dependencies": {}
+}

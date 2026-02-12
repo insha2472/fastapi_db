@@ -7,7 +7,7 @@ load_dotenv()
 Base = declarative_base()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
-print("DATABASE_URL",DATABASE_URL)
+
 # Create engine once at module level
 engine = create_engine(DATABASE_URL)
 
