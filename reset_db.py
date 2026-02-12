@@ -10,6 +10,7 @@ def reset_db():
     queries = [
         "DROP TABLE IF EXISTS chat_sessions CASCADE",
         "DROP TABLE IF EXISTS chat_messages CASCADE",
+        "DROP TABLE IF EXISTS chat_message CASCADE",
         "DROP TABLE IF EXISTS chat_history CASCADE",
         "DROP TABLE IF EXISTS users CASCADE"
     ]

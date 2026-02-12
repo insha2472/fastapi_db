@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from models import ChatHistory, ChatMessage
+from models import ChatHistory, ChatMessage, ChatSession
 from schemas.chat_schemas import ChatHistoryCreate, ChatMessageCreate
 
 class ChatRepo:
@@ -13,7 +13,15 @@ class ChatRepo:
         return self.db.query(ChatHistory).filter(ChatHistory.id == history_id).first()
 
     def create_history(self, user_id: int, history: ChatHistoryCreate):
-        db_history = ChatHistory(user_id=user_id, title=history.title)
+        # Ensure a session exists for the user
+        session = self.db.query(ChatSession).filter(ChatSession.user_id == user_id).first()
+        if not session:
+            session = ChatSession(user_id=user_id)
+            self.db.add(session)
+            self.db.commit()
+            self.db.refresh(session)
+            
+        db_history = ChatHistory(user_id=user_id, title=history.title, session_id=session.id)
         self.db.add(db_history)
         self.db.commit()
         self.db.refresh(db_history)
