@@ -1,30 +1,29 @@
-
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import HTTPException
+from fastapi import APIRouter
 from sqlalchemy.orm import Session
+from fastapi import Depends
 from db import get_db
 from models import User
 from repositories.user_repo import UserRepo
 from schemas.user_shemas import UserSchema
-from schemas.tokenschemas import TokenSchema, TokenData, loginSchema
-from utils.jvt_handler import create_tokens, verify_token
-
+from schemas.tokenschemas import Token, TokenRefresh, LoginRequest
+from utils.jwt_handler import create_tokens, verify_token
 router = APIRouter()
-
 
 @router.post("/signup")
 def signup(user: UserSchema, db: Session = Depends(get_db)):
     user_repo = UserRepo(db)
     # Convert Pydantic schema to SQLAlchemy model
-    existing_user = user_repo.get_user_by_email(user.email)
+    existing_user=user_repo.get_user_by_email(user.email)
     if existing_user:
-        raise HTTPException(status_code=400, detail="User already exists")
+        raise HTTPException(status_code=400,detail="User already exists")
     db_user = User(email=user.email, password=user.password)
     user_repo.add_user(db_user)
     return {"message": "User signed up successfully"}
 
 
-@router.post("/login", response_model=TokenSchema)
-def login(credentials: loginSchema, db: Session = Depends(get_db)):
+@router.post("/login", response_model=Token)
+def login(credentials: LoginRequest, db: Session = Depends(get_db)):
     """Authenticate user and return access and refresh tokens."""
     user_repo = UserRepo(db)
     user = user_repo.get_user_by_email(credentials.email)
@@ -39,8 +38,8 @@ def login(credentials: loginSchema, db: Session = Depends(get_db)):
     return create_tokens(user.id, user.email)
 
 
-@router.post("/refresh", response_model=TokenSchema)
-def refresh_token(token_data: TokenData, db: Session = Depends(get_db)):
+@router.post("/refresh", response_model=Token)
+def refresh_token(token_data: TokenRefresh, db: Session = Depends(get_db)):
     """Get new access and refresh tokens using a valid refresh token."""
     payload = verify_token(token_data.refresh_token, token_type="refresh")
     

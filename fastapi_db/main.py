@@ -1,12 +1,13 @@
 from fastapi import FastAPI
 from routes.user_routes import router as user_routes
-from db import get_db,DATABASE_URL
-from sqlalchemy import create_engine
+from db import get_db, engine
 from models import Base
 from routes.email_routes import router as email_routes
 from routes.ai_response_routes import router as ai_response_routes
+from routes.chat_routes import router as chat_routes
 import os
 from fastapi.middleware.cors import CORSMiddleware
+
 app = FastAPI()
 
 app.add_middleware(
@@ -20,15 +21,14 @@ app.add_middleware(
 app.include_router(user_routes)
 app.include_router(email_routes)
 app.include_router(ai_response_routes)
+app.include_router(chat_routes)
 
-
-
-# Database initialization is handled in db.py
+# Create database tables
+Base.metadata.create_all(bind=engine)
 
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
-
 
 if __name__ == "__main__":
     import uvicorn
