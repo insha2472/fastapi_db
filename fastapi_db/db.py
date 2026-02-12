@@ -9,10 +9,7 @@ Base = declarative_base()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-# Create engine once at module level
 engine = create_engine(DATABASE_URL)
-
-# Create SessionLocal class for creating database sessions
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def get_db():
