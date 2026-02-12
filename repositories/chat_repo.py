@@ -28,3 +28,25 @@ class ChatRepo:
 
     def get_messages_by_history(self, history_id: int):
         return self.db.query(ChatMessage).filter(ChatMessage.history_id == history_id).all()
+
+    def delete_history(self, history_id: int):
+        db_history = self.get_history(history_id)
+        if db_history:
+            self.db.delete(db_history)
+            self.db.commit()
+            return True
+        return False
+
+    def update_history_title(self, history_id: int, title: str):
+        db_history = self.get_history(history_id)
+        if db_history:
+            db_history.title = title
+            self.db.commit()
+            self.db.refresh(db_history)
+            return db_history
+        return None
+
+    def delete_all_history(self, user_id: int):
+        self.db.query(ChatHistory).filter(ChatHistory.user_id == user_id).delete()
+        self.db.commit()
+        return True

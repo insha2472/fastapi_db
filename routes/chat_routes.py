@@ -48,3 +48,29 @@ def add_message(history_id: int, message: ChatMessageCreate, authorization: str 
     if not history or history.user_id != user_id:
         raise HTTPException(status_code=404, detail="Chat history not found")
     return repo.add_message(history_id, message)
+
+@router.delete("/history/{history_id}")
+def delete_history(history_id: int, authorization: str = None, db: Session = Depends(get_db)):
+    user_id = get_user_id_from_header(authorization)
+    repo = ChatRepo(db)
+    history = repo.get_history(history_id)
+    if not history or history.user_id != user_id:
+        raise HTTPException(status_code=404, detail="Chat history not found")
+    repo.delete_history(history_id)
+    return {"message": "Chat history deleted successfully"}
+
+@router.patch("/history/{history_id}", response_model=ChatHistory)
+def rename_history(history_id: int, history_update: ChatHistoryCreate, authorization: str = None, db: Session = Depends(get_db)):
+    user_id = get_user_id_from_header(authorization)
+    repo = ChatRepo(db)
+    history = repo.get_history(history_id)
+    if not history or history.user_id != user_id:
+        raise HTTPException(status_code=404, detail="Chat history not found")
+    return repo.update_history_title(history_id, history_update.title)
+
+@router.delete("/history")
+def delete_all_history(authorization: str = None, db: Session = Depends(get_db)):
+    user_id = get_user_id_from_header(authorization)
+    repo = ChatRepo(db)
+    repo.delete_all_history(user_id)
+    return {"message": "All chat history deleted successfully"}
